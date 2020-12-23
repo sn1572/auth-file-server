@@ -1,0 +1,5 @@
+pyenv/
+__pycache__/
+*.log
+log.txt
+db.sqlite
