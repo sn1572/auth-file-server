@@ -3,3 +3,5 @@ __pycache__/
 *.log
 log.txt
 db.sqlite
+server-root/
+.*.html
