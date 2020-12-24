@@ -28,4 +28,5 @@ Clone to your RPi (or similar environment). Then:
 
 5. (Optional) Review approved users
 
-        ./db_manager -e <email> --info
+        ./db_manager -e <user-email> --info
+        ./db_manager -u <user-name> --info
