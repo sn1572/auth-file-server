@@ -12,7 +12,7 @@ Install notes:
 
 Clone to your RPi (or similar environment). Then:
 
-1. Create the databse and server root directory for holding user info
+1. Create the databse and server root directory
 
         ./db_manager.py --init
 
