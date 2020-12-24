@@ -88,10 +88,15 @@ def init_func():
 
 
 if __name__ == '__main__':
+    descr = '''
+    Utility for interacting with the database.
+    Common use case is approval. Use -u -e -i to identify
+    a user and -a (-d) to approve (disapprove).
+    Example: ./db_manager.py -e you@mail.com -a
     '''
-    Utility for adding new users to the database.
-    '''
-    parser = argparse.ArgumentParser(allow_abbrev=True)
+    parser = argparse.ArgumentParser(
+        allow_abbrev=True,
+        description=descr)
     parser.add_argument('--init', 
         action='store_true',
         help='Creates a new database if one does not exist.')
@@ -120,13 +125,12 @@ if __name__ == '__main__':
         action='store',
         type=str,
         default='server-root',
-        help='Root directory of file server (default ./server-root)')
+        help='''Root directory of file server (default ./server-root).
+            Argument required if approving a user or initializing with
+            a custom root directory.''')
     parser.add_argument('-l', '--list',
         action = 'store_true',
         help="List all users in the database")
-    parser.add_argument('-x',
-        action = 'store_true',
-        help="Run some code testis")
 
     args = parser.parse_args()
 
