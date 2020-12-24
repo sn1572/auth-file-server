@@ -3,11 +3,11 @@
 
 from file_server import db, app
 from models import User
-import argparse
+import argparse, os
 
 
 def func_in_context(app, func, **kwargs):
-    #wrapper that opens a context for sqlalchemy
+    #gets a context before executing a function
     with app.app_context():
         user = User.query.filter_by(**kwargs).first()
         func(user)
@@ -38,6 +38,11 @@ if __name__ == '__main__':
         action='store',
         type=str,
         help='User email of account to modify.')
+    parser.add_argument('-r', '--rootdir',
+        action='store',
+        type=str,
+        default='server-root',
+        help='Root directory of file server (default ./server-root)')
 
     args = parser.parse_args()
 
@@ -48,6 +53,7 @@ if __name__ == '__main__':
     approve = args.approve
     disapprove = args.disapprove
     info = args.info
+    rootdir = args.rootdir
 
     if init:
         print("Writing new database")
@@ -64,6 +70,9 @@ if __name__ == '__main__':
             def approve_func(user):
                 user.approved = True
                 db.session.commit()
+                uid = user.id
+                userdir = os.path.join(rootdir, str(uid))
+                os.mkdir(userdir)
             func_in_context(app, approve_func, **kwargs)
         elif disapprove:
             def disapprove_func(user):
@@ -75,8 +84,10 @@ if __name__ == '__main__':
                 name = user.name
                 email = user.email
                 approved = user.approved
+                uid = user.id
                 print('\033[1mUser info\033[0m')
-                print("{:>12}: {}\n{:>12}: {}\n{:>12}: {}".\
+                print("{:>12}: {}\n{:>12}: {}\n{:>12}: {}\n{:>12}: {}".\
                     format('name', name, 'e-mail',
-                        email, 'approved', approved))
+                        email, 'approved', approved,
+                        'id', uid))
             func_in_context(app, info_func, **kwargs)

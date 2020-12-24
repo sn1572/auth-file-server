@@ -4,11 +4,14 @@ from models import User
 from file_server import db
 from flask_login import login_user, login_required, current_user, logout_user
 
+
 auth = Blueprint('auth', __name__)
+
 
 @auth.route('/login')
 def login():
     return(render_template('login.html'))
+
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -33,9 +36,11 @@ def login_post():
     login_user(user, remember=remember)
     return redirect(url_for('auth.profile'))
 
+
 @auth.route('/signup')
 def signup():
     return(render_template('signup.html'))
+
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -60,13 +65,20 @@ def signup_post():
     db.session.commit()
     return(redirect(url_for('auth.login')))
 
+
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     return(redirect(url_for('path_view')))
 
+
 @auth.route('/profile')
 @login_required
 def profile():
     return(render_template('profile.html', name=current_user.name))
+
+
+@auth.route('/about')
+def about():
+    return(render_template('about.html'))

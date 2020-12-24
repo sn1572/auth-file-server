@@ -1,7 +1,7 @@
 from flask import Flask, make_response, request, session, Response
 from flask import stream_with_context, render_template, send_file
 from flask.views import MethodView
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
 import humanize
@@ -15,7 +15,7 @@ from pathlib2 import Path
 from flask_sqlalchemy import SQLAlchemy
 
 
-root = os.path.normpath("/home/mark/file-server-root")
+root = os.path.normpath('server-root')
 
 #app init and config settings
 app = Flask(__name__, static_url_path='/assets', static_folder='assets')
@@ -44,6 +44,12 @@ icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,
 @login_manager.user_loader
 def load_user(user_id):
     return(User.query.get(int(user_id)))
+
+
+def get_user_root():
+    #current_user is imported from flask_login
+    uroot = os.path.join(root, str(current_user.id))
+    return(uroot)
 
 
 # template_filter is used to make a jinja template
@@ -219,7 +225,7 @@ class PathView(MethodView):
     @login_required
     def get(self, p=''):
         hide_dotfile = request.args.get('hide-dotfile', request.cookies.get('hide-dotfile', 'no'))
-        path = os.path.join(root, p)
+        path = os.path.join(get_user_root(), p)
         if os.path.isdir(path):
             contents = []
             total = {'size': 0, 'dir': 0, 'file': 0}
@@ -246,7 +252,7 @@ class PathView(MethodView):
         elif os.path.isfile(path):
             if 'Range' in request.headers:
                 start, end = get_range(request)
-                res = partial_response(path, start, end, max_length=1<<20)
+                res = partial_response(path, start, end, max_length=5*(1<<20))
                 #res = streaming_response(path, start, end)
             else:
                 print('No range specified in header')
@@ -258,7 +264,7 @@ class PathView(MethodView):
     
     @login_required
     def put(self, p=''):
-        path = os.path.join(root, p)
+        path = os.path.join(get_user_root(), p)
         dir_path = os.path.dirname(path)
         Path(dir_path).mkdir(parents=True, exist_ok=True)
 
@@ -283,7 +289,7 @@ class PathView(MethodView):
 
     @login_required
     def post(self, p=''):
-        path = os.path.join(root, p)
+        path = os.path.join(get_user_root(), p)
         Path(path).mkdir(parents=True, exist_ok=True)
 
         info = {}
@@ -308,7 +314,7 @@ class PathView(MethodView):
 
     @login_required   
     def delete(self, p=''):
-        path = os.path.join(root, p)
+        path = os.path.join(get_user_root(), p)
         dir_path = os.path.dirname(path)
         Path(dir_path).mkdir(parents=True, exist_ok=True)
 
