@@ -58,6 +58,10 @@ if __name__ == '__main__':
     if init:
         print("Writing new database")
         db.create_all(app=app)
+        if not os.path.isdir(rootdir):
+            print("Creating server root dir at {}".format(
+                rootdir))
+            os.mkdir(rootdir)
 
     kwargs = None
     if email:
