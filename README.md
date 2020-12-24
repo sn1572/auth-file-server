@@ -2,7 +2,7 @@
 
 Essentially similar to an FTP server. Supports in-browser streaming / viewing of content, downloading, and user authentication and siloing.
 
-The major inspriation for this was just how bad Plex is. Plex requires a client as well as server application and web content. Moreover Plex likes to force the server to perform video transcoding on demand, which effectively disables a Raspberry Pi, preventing it from responding to other server requests. This project is meant to be a relatively lightweight replacement that functions entirely in browser with no special client.
+The major inspriation for this was just how bad Plex is when run on a Raspberry Pi. Plex requires a client as well as server application and web content. Moreover Plex likes to force the server to perform video transcoding on demand which effectively disables an RPi (or any low-power server), preventing it from responding to other server requests. This project is meant to be a relatively lightweight replacement that functions entirely in browser with no special client code.
 
 The two largest projects on which this project builds are:
 
