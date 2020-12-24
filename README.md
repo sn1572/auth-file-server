@@ -14,18 +14,18 @@ Clone to your RPi (or similar environment). Then:
 
 1. Create the databse and server root directory for holding user info
 
-    ./db_manager.py --init
+        ./db_manager.py --init
 
 2. Start the server
 
-    ./run.sh
+        ./run.sh
 
 3. Visit the website and sign up
 4. Revisit the command line and approve new users
 
-    ./db_manager -e <user-email> -a
-    ./db_manager -u <user-name> -a
+        ./db_manager -e <user-email> -a
+        ./db_manager -u <user-name> -a
 
 5. (Optional) Review approved users
 
-    ./db_manager -e <email> --info
+        ./db_manager -e <email> --info
