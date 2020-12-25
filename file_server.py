@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_required, current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
 import humanize, os, re, stat, json, mimetypes, sys
+import subprocess as sub
 from pathlib2 import Path
 from flask_sqlalchemy import SQLAlchemy
 
@@ -84,9 +85,10 @@ def time_humanize(timestamp):
     return humanize.naturaltime(mdate)
 
 
-@app.template_filter('root_usage')
 def get_root_usage():
-    print("placeholder")
+    out = sub.check_output('df | awk \'/\/dev\/root/ {print $5}\'', shell=1)
+    out = out.decode('utf-8').strip()
+    print(out)
 
 
 def get_type(mode):
