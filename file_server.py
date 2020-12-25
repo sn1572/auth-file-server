@@ -4,13 +4,7 @@ from flask.views import MethodView
 from flask_login import LoginManager, login_required, current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone
-import humanize
-import os
-import re
-import stat
-import json
-import mimetypes
-import sys
+import humanize, os, re, stat, json, mimetypes, sys
 from pathlib2 import Path
 from flask_sqlalchemy import SQLAlchemy
 
@@ -22,6 +16,7 @@ app = Flask(__name__, static_url_path='/assets', static_folder='assets')
 app.config['SECRET_KEY'] = 'key goes here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 
 #db setup
 db = SQLAlchemy()
@@ -87,6 +82,11 @@ def icon_fmt(filename):
 def time_humanize(timestamp):
     mdate = datetime.fromtimestamp(timestamp)
     return humanize.naturaltime(mdate)
+
+
+@app.template_filter('root_usage')
+def get_root_usage():
+    print("placeholder")
 
 
 def get_type(mode):

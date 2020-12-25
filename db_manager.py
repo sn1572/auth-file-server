@@ -144,7 +144,6 @@ if __name__ == '__main__':
     rootdir = args.rootdir
     listall = args.list
     uid = args.id
-    x = args.x
 
     '''
     Functions that don't need a user or users
