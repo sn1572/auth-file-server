@@ -25,8 +25,6 @@ Clone to your RPi (or similar environment). Then:
 
         ./db_manager -e <user-email> -a
         ./db_manager -u <user-name> -a
+        ./db_manager -i <user-id> -a
 
-5. (Optional) Review approved users
-
-        ./db_manager -e <user-email> --info
-        ./db_manager -u <user-name> --info
+And that's it. User directories can be found in server-root/<user-id>.
