@@ -9,54 +9,34 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/custom.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/listr.pack.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/jquery.filer.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/menu.css')}}">
-
-	<style>
-	a.menu {
-		font-size: medium;
-		margin-top: 5px;
-		background-color: #ffffff;
-	}
-	</style>
+   
+    <style>
+    .offset-class {
+        margin-bottom: 0;
+        margin-left: 15px;
+    }
+    </style>
 </head>
 
 
 <body>
-	<!--section class="hero is-primary is-fullheight"-->
-        <!--div class="hero-head"-->
-	<ol>
-            <div class="container">
-		<div class="row">
-		    <div class="col-xs-1">
-		        <a class="menu" href="{{ url_for('auth.profile') }}">Profile</a>
-		    </div>
-		    <div class="col-xs-1">
-		        <a class="menu" href="{{ url_for('auth.login') }}">Login</a>
-		    </div>
-		    <div class="col-xs-1">
-		        <a class="menu" href="{{ url_for('auth.signup') }}">Sign Up</a>
-		    </div>
-		    <div class="col-xs-1">
-		        <a class="menu" href="{{ url_for('auth.logout') }}">Logout</a>
-		    </div>
-		    <div class="col-xs-1">
-		        <a class="menu" href="{{ url_for('path_view') }}">Home</a>
-		    </div>
-		    <div class="col-xs-1">
-			<a class="menu" href="{{ url_for('auth.about') }}">About</a>
-		    </div>
-		</div>
-            </div>
-	</ol>
-        <!--/div-->
-
-        <div class="hero-body">
-	    <div class="container has-text-centered">
-	        {% block content %}
-	        {% endblock %}
-	    </div>
+    <div class="container">
+        <div class="btn-group offset-class">
+            <a class="btn btn-secondary text-muted" href="{{ url_for('auth.profile') }}">Profile</a>
+            <a class="btn btn-secondary text-muted" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="btn btn-secondary text-muted" href="{{ url_for('auth.signup') }}">Sign Up</a>
+            <a class="btn btn-secondary text-muted" href="{{ url_for('auth.logout') }}">Logout</a>
+            <a class="btn btn-secondary text-muted" href="{{ url_for('path_view') }}">Home</a>
+            <a class="btn btn-secondary text-muted" href="{{ url_for('auth.about') }}">About</a>
         </div>
-    <!--/section-->
+    </div>
+
+    <div class="hero-body">
+	<div class="container has-text-centered">
+	    {% block content %}
+	    {% endblock %}
+	</div>
+    </div>
 </body>
 
 </html>
