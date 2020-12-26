@@ -251,7 +251,6 @@ class PathView(MethodView):
                 res = partial_response(path, start, end, max_length=5*(1<<20))
                 #res = streaming_response(path, start, end)
             else:
-                print('No range specified in header')
                 res = send_file(path)
                 res.headers.add('Content-Disposition', 'attachment')
         else:
