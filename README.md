@@ -20,6 +20,7 @@ Clone to your RPi (or similar environment). Then:
 1. Create a Python 3 environment and install requirements
 
         python3 -m venv pyenv
+        source pyenv/bin/activate
         pip3 install -r requirements.txt
 
 2. Create the database and server root directory
