@@ -6,7 +6,7 @@ The major inspriation for this project was just how bad Plex is when run on a Ra
 
 The two largest projects on which this project builds are:
 
-[Wildog's flask file server](https://github.com/Wildog/flask-file-server) and [this Flask-Login tutorial](https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login). A lot of additional features and improvements are present. These include:
+[Wildog's flask file server](https://github.com/Wildog/flask-file-server) and [this Flask-Login tutorial](https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login). Aside from getting these projects talking to each other, additional features have been added. These include:
 
 - Separate user directories
 - CLI database management
