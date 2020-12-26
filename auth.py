@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from file_server import db
 from flask_login import login_user, login_required, current_user, logout_user
+from stats import reports
 
 
 auth = Blueprint('auth', __name__)
@@ -81,4 +82,4 @@ def profile():
 
 @auth.route('/about')
 def about():
-    return(render_template('about.html'))
+    return(render_template('about.html', reports=reports))

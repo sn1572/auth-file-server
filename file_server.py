@@ -85,12 +85,6 @@ def time_humanize(timestamp):
     return humanize.naturaltime(mdate)
 
 
-def get_root_usage():
-    out = sub.check_output('df | awk \'/\/dev\/root/ {print $5}\'', shell=1)
-    out = out.decode('utf-8').strip()
-    print(out)
-
-
 def get_type(mode):
     if stat.S_ISDIR(mode) or stat.S_ISLNK(mode):
         type = 'dir'

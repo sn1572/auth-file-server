@@ -3,7 +3,10 @@
 <div class="container width-60-percent">
     <h3 class="title">About</h3>
     <div class="breadcrumb">
-        <p>I wanted a server and website from which to do basic file-servery things from one or many Raspberry Pis. Other options ticked me off so here we are.</p>
+        <p>Simple Flask file server. No client required. Now here, have some stats.</p>
+        <p>
+            {% for report in reports %} {{report}}<br> {% endfor %}
+        </p>
     </div>
 </div>
 {% endblock %}
