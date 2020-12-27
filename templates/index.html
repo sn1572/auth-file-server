@@ -8,6 +8,7 @@
   <title>File System</title>
 </head>
 <body dir="ltr">
+  <div id="background" onclick="hide_overlay()"></div>
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
@@ -65,9 +66,8 @@
             <td class="text-xs-left " data-sort-value="file-{{entry.name | lower}}"><i class="fa fa-fw {{entry.name | icon_fmt}} " aria-hidden="true"></i>&nbsp;
                 {% if entry.name | data_fmt == 'video' %}
                     <div class="overlay">
-                        <!--button class="popup-video-button">{{entry.name}}</button-->
-                        <a href="{{entry.name}}" download>{{entry.name}}</a>
-                        <div class="overlay-content">
+                        <button onclick="show_overlay('{{entry.name}}')" class="popup-video-button">{{entry.name}}</button>
+                        <div class="overlay-content" id="{{entry.name}}">
                             <video width="640" height="480" controls>
                                 <source src="{{entry.name}}" type="video/mp4">
                                 Your browser does not support this video format.
@@ -76,7 +76,7 @@
                     </div>
                 {% else %}
                     <a {% if entry.name | data_fmt not in ['unknown', 'archive'] %} data-toggle="modal" data-target="#viewer-modal" data-type="{{entry.name | data_fmt}}" {% endif %} href="{{entry.name}}" data-size="{{entry.size | size_fmt}}">{{entry.name}}</a>
-                {% endif %}
+            {% endif %}
             </td>
             <td class="text-xs-right " data-sort-value="{{entry.size}}" title="{{entry.size}} bytes">{{entry.size | size_fmt}}</td>
             <td class="text-xs-right " data-sort-value="{{entry.mtime}}" title="{{entry.mtime | time_fmt}}">{{entry.mtime | humanize}}</td>
@@ -159,5 +159,27 @@
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.filer.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.base64.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/custom.js')}}"></script>
+    <script>
+        function show_overlay(id){
+            var vid_window = document.getElementById(id);
+            var background = document.getElementById("background");
+            if (vid_window.style.display != "block") {
+                vid_window.style.display = "block";
+                background.style.display = "block";
+            } else {
+                vid_window.style.display = "none";
+                background.style.display = "none";
+            }
+        }
+        function hide_overlay(){
+            var background = document.getElementById("background");
+            var vid_windows = document.querySelectorAll('.overlay-content');
+            for (var i = 0; i < vid_windows.length; ++i) {
+                var popup = vid_windows[i];  
+                popup.style.display  = 'none';
+            }
+            background.style.display = 'none';
+        }
+    </script>
 </body>
 {% endblock %}
