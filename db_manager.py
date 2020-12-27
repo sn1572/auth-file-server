@@ -3,6 +3,7 @@
 
 from file_server import db, app
 from models import User
+from werkzeug.security import generate_password_hash
 import argparse, os
 
 
@@ -87,6 +88,17 @@ def init_func():
         os.mkdir(rootdir)
 
 
+@in_context
+def reset_password(password, **user_descr):
+    user = User.query.filter_by(**user_descr).first()
+    if not user:
+        print('No users found meeting any of the following criteria:')
+        for key, val in kwargs.items():
+            print('{}: {}'.format(key, val))
+    user.password = generate_password_hash(password, method='sha256')
+    db.session.commit()
+
+
 if __name__ == '__main__':
     descr = '''
     Utility for interacting with the database.
@@ -131,6 +143,10 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--list',
         action = 'store_true',
         help="List all users in the database")
+    parser.add_argument('-p', '--password',
+        action = 'store',
+        type=str,
+        help="Enter a new password for the user.")
 
     args = parser.parse_args()
 
@@ -144,6 +160,7 @@ if __name__ == '__main__':
     rootdir = args.rootdir
     listall = args.list
     uid = args.id
+    password = args.password
 
     '''
     Functions that don't need a user or users
@@ -186,3 +203,6 @@ if __name__ == '__main__':
 
     if info:
         users_lambda(info_func, **user_descr)
+
+    if password:
+        reset_password(password, **user_descr)
