@@ -2,7 +2,7 @@
 
 Simple file browser with video streaming.
 
-The major inspriation for this project was just how bad Plex is when run on a Raspberry Pi. Plex requires both a client and server and will deadlock a raspberry Pi performing on-demand video encoding. This project is meant to be a lightweight replacement that functions entirely in browser with no special client code.
+The major inspriation for this project was just how bad Plex is when run on a Raspberry Pi. Whereas a single thread from this server can deliver a 170 MB video in seconds, Plex would deadlock 4 cores indefinitely (with video transcoding). Bad Plex. This project is meant to be a lightweight replacement that functions entirely in browser with no special client code.
 
 The two largest projects on which this project builds are:
 
@@ -10,10 +10,11 @@ The two largest projects on which this project builds are:
 
 - Separate user directories
 - CLI database management
-- CSS theme integration
-- Improved response to range headers
+- Web page theme integration
+- Video playback with html5 <video> tag
+        That one's a big deal since the Chrome video streamer is not great
 
-Install notes:
+## Install notes
 
 Clone to your RPi (or similar environment). Then:
 
