@@ -12,7 +12,7 @@ The two largest projects on which this project builds are:
 - CLI database management
 - User review process
 - Web page theme integration
-- Video playback with html5 <video> tag
+- Video playback with html5 video tag
 
 Leveraging the video tag is a big improvement. The built in Chrome player struggles with large video files.
 
