@@ -31,9 +31,13 @@
     }
     .popup-video-button {
         color: #0275d8;
-        padding: None;
-        border: None;
+        padding: none;
+        border: none;
         background-color: rgba(0,0,0,0);
+        outline: none;
+    }
+    .popup-video-button:focus {
+        outline: none;
     }
     .overlay-content {
         display: none;
@@ -45,17 +49,19 @@
         margin-left: 20%;
         min-width: 80%;
         min-height: 60%;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
+        box-shadow: 0px 32px 32px 0px rgba(0,0,0,0.2);
+        z-index: 2;
     }
     #background {
-        background-color: transparent;
+        /*background-color: transparent;*/
+        background-color: rgba(0,0,0,0.3);
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         display: none;
+        z-index: 1;
     }
     </style>
 </head>
