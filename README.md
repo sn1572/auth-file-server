@@ -10,9 +10,11 @@ The two largest projects on which this project builds are:
 
 - Separate user directories
 - CLI database management
+- User review process
 - Web page theme integration
 - Video playback with html5 <video> tag
-        That one's a big deal since the Chrome video streamer is not great
+
+Leveraging the video tag is a big improvement. The built in Chrome player struggles with large video files.
 
 ## Install notes
 
