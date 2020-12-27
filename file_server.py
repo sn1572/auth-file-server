@@ -67,6 +67,7 @@ def data_fmt(filename):
     for type, exts in datatypes.items():
         if filename.split('.')[-1] in exts:
             t = type
+            break
     return t
 
 

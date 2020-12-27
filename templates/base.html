@@ -23,6 +23,34 @@
         text-align: center;
         width: 60%;
     }
+
+    .overlay {
+        position: absolute;
+        display: inline;
+        margin-left: 5px;
+    }
+    .popup-video-button {
+        color: #0275d8;
+        padding: None;
+        border: None;
+        background-color: rgba(0,0,0,0);
+    }
+    .overlay-content {
+        display: none;
+        position: absolute;
+        background-color: #ffffff;
+        top: 50%;
+        left: 50%;
+        margin-top: -100%;
+        margin-left: 20%;
+        min-width: 80%;
+        min-height: 60%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    .overlay:hover .overlay-content {
+        display: block;
+    }
     </style>
 </head>
 
