@@ -27,7 +27,39 @@ def get_kernel_version():
 
 @agg
 def plex_hatred():
-    return("Disappointment in Plex: +++++++---")
+    current_dspp = 7
+    level_map = {0: 'un-disappointed',
+        1: 'they forgot napkins in your happy meal',
+        2: 'cloudy day',
+        3: 'missed a spot while cleaning',
+        4: '15 minute delay',
+        5: 'item out of stock; refund issued',
+        6: 'windows update during work presentation',
+        7: 'Lahey with a whiskey dick',
+        8: 'Linus Torvalds doesn\'t have time to see you',
+        9: 'Dennis Ritchie locked his office door',
+        10: 'like a kernel developer being told you run a tainted kernel'}
+    return("Current disappointment in Plex: {}/10 ({})".format(
+        current_dspp,
+        level_map[current_dspp]))
+
+
+@agg
+def net_usage_pie():
+    adapter = 'wlan0'
+    img_file = './assets/abt-img/network-log-pie.png'
+    _ = sub.check_output('vnstati -s -i {} -o {}'.\
+        format(adapter, img_file), shell=1)
+    return('')
+
+
+@agg
+def net_usage_bar():
+    adapter = 'wlan0'
+    img_file = './assets/abt-img/network-log-bar.png'
+    _ = sub.check_output('vnstati -h -i {} -o {}'.\
+        format(adapter, img_file), shell=1)
+    return('')
 
 
 reports = list(map(lambda f: f(), reports))

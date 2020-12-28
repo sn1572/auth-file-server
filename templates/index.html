@@ -67,12 +67,12 @@
                 {% if entry.name | data_fmt == 'video' %}
                     <div class="overlay">
                         <button onclick="show_overlay('{{entry.name}}')" class="popup-video-button">{{entry.name}}</button>
-                        <div class="overlay-content" id="{{entry.name}}">
+                        <figure class="overlay-content" id="{{entry.name}}">
                             <video width="640" height="480" controls>
                                 <source src="{{entry.name}}" type="video/mp4">
                                 Your browser does not support this video format.
                             <\video>
-                        <\div>
+                        <\figure>
                     </div>
                 {% else %}
                     <a {% if entry.name | data_fmt not in ['unknown', 'archive'] %} data-toggle="modal" data-target="#viewer-modal" data-type="{{entry.name | data_fmt}}" {% endif %} href="{{entry.name}}" data-size="{{entry.size | size_fmt}}">{{entry.name}}</a>
