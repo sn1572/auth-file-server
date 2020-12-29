@@ -17,7 +17,7 @@ app = Flask(__name__, static_url_path='/assets', static_folder='assets')
 app.config['SECRET_KEY'] = 'key goes here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+#app.config['SQLALCHEMY_ECHO'] = True
 
 #db setup
 db = SQLAlchemy()
@@ -249,7 +249,7 @@ class PathView(MethodView):
         elif os.path.isfile(path):
             if 'Range' in request.headers:
                 start, end = get_range(request)
-                res = partial_response(path, start, end, max_length=5*(1<<20))
+                res = partial_response(path, start, end, max_length=2*(1<<20))
                 #res = streaming_response(path, start, end)
             else:
                 res = send_file(path)

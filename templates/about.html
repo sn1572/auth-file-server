@@ -3,9 +3,12 @@
 <div class="container width-60-percent">
     <h3 class="title">About</h3>
     <div class="breadcrumb">
-        <p>Clientless file server using Flask, SQLight, uwsgi, and more.</p>
+        <p>Clientless file server using Flask, SQLight, uwsgi, and others.</p>
         <p>
             {% for report in reports %} {{report}}<br> {% endfor %}
+            {% for image_fname in imgs %}
+                <img src="{{url_for('static', filename=image_fname)}}" alt="network_usage_graphs">
+            {% endfor %}
         </p>
     </div>
 </div>
