@@ -8,13 +8,13 @@ The two largest projects on which this project builds are:
 
 [Wildog's flask file server](https://github.com/Wildog/flask-file-server) and [this Flask-Login tutorial](https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login). Aside from getting these projects talking to each other, additional features have been added. These include:
 
-* Vastly improved user management
-        - Passwords are sha-256 hashed and stored in a secure sql db
-        - CLI database manager
-        - Separate user directories
-        - User review process
-* Web page theme integration
-* Video playback with html5 video tag
+- Vastly improved user management
+    - Passwords are sha-256 hashed and stored in a secure sql db
+    - CLI database manager
+    - Separate user directories
+    - User review process
+- Web page theme integration
+- Video playback with html5 video tag
 
 Leveraging the video tag is a big improvement. The built in Chrome player struggles with large video files.
 
