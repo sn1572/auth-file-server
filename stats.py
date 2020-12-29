@@ -46,7 +46,7 @@ def plex_hatred():
 
 @agg
 def net_usage_pie():
-    adapter = 'lan0'
+    adapter = 'eth0'
     img_file = './assets/abt-img/network-log-pie.png'
     _ = sub.check_output('vnstati -s -i {} -o {}'.\
         format(adapter, img_file), shell=1)
