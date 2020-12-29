@@ -177,7 +177,7 @@
     {% if entry.name | data_fmt == 'video' %}
     <div class="overlay-content" id="{{entry.name}}">
         <video style="outline:none" width="640" height="480" controls>
-            <source src="{{entry.name}}" type="video/mp4">
+            <source src="{{entry.name}}" type="video/{{entry.extension}}">
             <p>Your browser does not support this video format.</p>
         <\video>
     <\div>

@@ -55,7 +55,7 @@ def net_usage_pie():
 
 @agg
 def net_usage_bar():
-    adapter = 'wlan0'
+    adapter = 'eth0'
     img_file = './assets/abt-img/network-log-bar.png'
     _ = sub.check_output('vnstati -h -i {} -o {}'.\
         format(adapter, img_file), shell=1)

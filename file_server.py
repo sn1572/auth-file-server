@@ -242,6 +242,7 @@ class PathView(MethodView):
                 sz = stat_res.st_size
                 info['size'] = sz
                 total['size'] += sz
+                info['extension'] = (os.path.splitext(filename)[1])[1:]
                 contents.append(info)
             page = render_template('index.html', path=p, contents=contents, total=total, hide_dotfile=hide_dotfile)
             res = make_response(page, 200)
