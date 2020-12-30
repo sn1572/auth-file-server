@@ -10,6 +10,11 @@ from pathlib2 import Path
 from flask_sqlalchemy import SQLAlchemy
 
 
+'''
+pre-forked thread setup.
+'''
+
+#root directory for file server
 root = os.path.normpath('server-root')
 
 #app init and config settings
@@ -17,7 +22,7 @@ app = Flask(__name__, static_url_path='/assets', static_folder='assets')
 app.config['SECRET_KEY'] = 'key goes here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#app.config['SQLALCHEMY_ECHO'] = True
+#app.config['SQLALCHEMY_ECHO'] = True #Inspect sqlite queries in log.txt
 
 #db setup
 db = SQLAlchemy()
@@ -32,11 +37,26 @@ from models import User
 from auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)
 
-ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg', '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX', 'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
-datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav', 'archive': '7z,zip,rar,gz,tar', 'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf', 'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt', 'source': 'atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml,plist', 'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4', 'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
-icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,gz,tar', 'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'fa-file-text': 'pdf', 'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt', 'fa-code': 'atom,plist,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml', 'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4', 'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+#Def's used by PathView
+ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg',
+    '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX',
+    'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
+datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav', 'archive': '7z,zip,rar,gz,tar',
+    'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf',
+    'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt', 'source': 'atom,bat,bash,c,cmd,coffee,\
+    css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,\
+    scss,sh,xml,yml,plist', 'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4',
+    'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,gz,tar',
+    'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'fa-file-text': 'pdf',
+    'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt', 'fa-code': 'atom,plist,bat,bash,c,cmd,\
+    coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,\
+    scss,sh,xml,yml', 'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4',\
+    'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
 
-
+'''
+Functions
+'''
 @login_manager.user_loader
 def load_user(user_id):
     return(User.query.get(int(user_id)))
@@ -48,7 +68,7 @@ def get_user_root():
     return(uroot)
 
 
-# template_filter is used to make a jinja template
+#template_filter is used to make a jinja template function
 @app.template_filter('size_fmt')
 def size_fmt(size):
     return humanize.naturalsize(size)
@@ -92,73 +112,6 @@ def get_type(mode):
     else:
         type = 'file'
     return type
-
-
-def streaming_response(path, start, end=None):
-    def make_response_chunk(path, start, chunk_size, length):
-        print("start: {}, chunk_size: {}, length: {}".format(
-            start, chunk_size, length))
-        iters = length // chunk_size
-        for i in range(iters):
-            with open(path, 'rb') as fd:
-                fd.seek(start)
-                bytes_read = fd.read(chunk_size)
-            errmsg = "Chunk size: {}, bytes read: {}".format(
-                chunk_size,
-                len(bytes_read))
-            assert len(bytes_read) == chunk_size, errmsg
-            print("Yielding {} bytes".format(chunk_size))
-            yield bytes_read
-            start += chunk_size
-        remainder = length-chunk_size*iters
-        if remainder > 0:
-            with open(path, 'rb') as fd:
-                fd.seek(start)
-                bytes_read = fd.read(remainder)
-            errmsg = "Remainder bytes: {}, bytes read: {}".format(
-                remainder,
-                len(bytes_read))
-            #assert len(bytes_read) == remainder, errmsg
-            print("Yielding a remainder of {} bytes".format(
-                len(bytes_read)))
-            yield bytes_read
-
-    file_size = os.path.getsize(path)
-    if (start > file_size-1) or (end < start):
-        #Request not satisfiable
-        response = Response(416)
-        return(response)
-
-    if end is None:
-        length = file_size-start
-    else:
-        length = end-start+1
-
-    chunk_size = 1 << 20 #one megabyte
-    #chunk_size = 1 << 17
-
-    response = Response(
-        stream_with_context(
-            make_response_chunk(path, start, chunk_size,
-                length
-            )
-        ),
-        206,
-        mimetype=mimetypes.guess_type(path)[0],
-        direct_passthrough=True,
-    )
-    response.headers.add(
-        'Content-Range', 'bytes {0}-{1}/{2}'.format(
-            start, start+length, file_size-1
-        ),
-    )
-    response.headers.add(
-        'Content-Length', length
-    )
-    response.headers.add(
-        'Accept-Ranges', 'bytes'
-    )
-    return(response)
 
 
 def partial_response(path, start, end=None, max_length=None):
@@ -218,6 +171,9 @@ def get_range(request):
         return 0, None
 
 
+'''
+MethodView extenders
+'''
 class PathView(MethodView):
     @login_required
     def get(self, p=''):
@@ -251,7 +207,6 @@ class PathView(MethodView):
             if 'Range' in request.headers:
                 start, end = get_range(request)
                 res = partial_response(path, start, end, max_length=2*(1<<20))
-                #res = streaming_response(path, start, end)
             else:
                 res = send_file(path)
                 res.headers.add('Content-Disposition', 'attachment')
@@ -333,6 +288,10 @@ class PathView(MethodView):
         res = make_response(json.JSONEncoder().encode(info), 204)
         res.headers.add('Content-type', 'application/json')
         return res
+
+
+class ShareView(MethodView):
+
 
 path_view = PathView.as_view('path_view')
 app.add_url_rule('/', view_func=path_view)
