@@ -8,12 +8,12 @@ import humanize, os, re, stat, json, mimetypes, sys
 import subprocess as sub
 from pathlib2 import Path
 from flask_sqlalchemy import SQLAlchemy
+from uwsgi import sharedarea_read, sharedarea_write
 
 
 '''
 pre-forked thread setup.
 '''
-
 #root directory for file server
 root = os.path.normpath('server-root')
 
@@ -53,6 +53,13 @@ icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,
     coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,\
     scss,sh,xml,yml', 'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4',\
     'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+
+#Used for accessing the shmem area
+shmem_sema = BoundedSemaphore(value=1)
+shared_size = 2*(1<<30)
+page_size = sub.check_output('getconf PAGESIZE',
+        shell=1).format('utf-8')
+page_size = int(page_size)
 
 '''
 Functions
@@ -291,8 +298,44 @@ class PathView(MethodView):
 
 
 class ShareView(MethodView):
+    def get(self, hashed=''):
+        key = hash(hashed)
+        index = key % shared_size
+        page = index // page_size
+        page_index = index % page_size
+        #the semaphore protecting access to the shmem
+        with shmem_sema:
+            #syntax:
+            #sharedarea_read(page_id, page_pos, num_bytes)
+            #sharedarea_write(id, pos, string-as-bytes)
+            indicator = sharedarea_read(page, page_index, 4)
+            #do something with the 4 indicator bytes to determine
+            #if the shared link is valid and, if so, what file it
+            #points to. (Should this point to a symlink somewhere...?)
+            file_path = shared_bytes_to_path(indicator)
+            if file_path:
+                stat_res = os.stat(file_path)
+                info = {}
+                info['name'] = filename
+                info['mtime'] = stat_res.st_mtime
+                ft = get_type(stat_res.st_mode)
+                info['type'] = ft
+                sz = stat_res.st_size
+                info['size'] = sz
+                total['size'] += sz
+                info['extension'] = (os.path.splitext(filename)[1])[1:]
+                #this page should have the download link
+                page = render_template('shared.html', info=info)
+                res = make_response(page, 200)
+            else:
+                info['status'] = 'error'
+                res = make_response(json.JSONEncoder().encode(info), 404)
+                res.headers.add('Content-type', 'application/json')
+                return(res)
 
 
 path_view = PathView.as_view('path_view')
+share_view = ShareView.as_view('share_view') #syntax OK?
 app.add_url_rule('/', view_func=path_view)
+app.add_url_rule('/sharelink-<hashed>', view_func=share_view)
 app.add_url_rule('/<path:p>', view_func=path_view)
