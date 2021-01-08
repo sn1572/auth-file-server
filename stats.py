@@ -1,4 +1,5 @@
 import subprocess as sub
+import os
 
 
 reports = []
@@ -48,6 +49,8 @@ def plex_hatred():
 def net_usage_pie():
     adapter = 'eth0'
     img_file = './assets/abt-img/network-log-pie.png'
+    if not os.path.isdir('assets/abt-img'):
+        os.mkdir('assets/abt-img')
     _ = sub.check_output('vnstati -s -i {} -o {}'.\
         format(adapter, img_file), shell=1)
     return('')
@@ -57,6 +60,8 @@ def net_usage_pie():
 def net_usage_bar():
     adapter = 'eth0'
     img_file = './assets/abt-img/network-log-bar.png'
+    if not os.path.isdir('assets/abt-img'):
+        os.mkdir('assets/abt-img')
     _ = sub.check_output('vnstati -h -i {} -o {}'.\
         format(adapter, img_file), shell=1)
     return('')

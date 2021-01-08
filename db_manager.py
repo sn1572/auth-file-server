@@ -50,7 +50,8 @@ def approve_func(user):
     db.session.commit()
     uid = user.id
     userdir = os.path.join(rootdir, str(uid))
-    os.mkdir(userdir)
+    if not os.path.isdir(userdir):
+        os.mkdir(userdir)
 
 
 def disapprove_func(user):
