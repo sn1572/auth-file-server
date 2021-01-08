@@ -191,7 +191,7 @@ def partial_response(path, start, end=None, max_length=None):
     )
     response.headers.add(
         'Content-Range', 'bytes {0}-{1}/{2}'.format(
-            start, start+length, file_size-1,
+            start, start+length-1, file_size,
         )
     )
     response.headers.add(
@@ -251,7 +251,6 @@ class PathView(MethodView):
             if 'Range' in request.headers:
                 start, end = get_range(request)
                 res = partial_response(path, start, end, max_length=2*(1<<20))
-                #res = streaming_response(path, start, end)
             else:
                 res = send_file(path)
                 res.headers.add('Content-Disposition', 'attachment')
