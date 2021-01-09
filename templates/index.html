@@ -147,11 +147,13 @@
   {% for entry in contents if entry.type == 'file' %}
   {% if entry.name | data_fmt == 'video' %}
   <div class="overlay-content" id="{{entry.name}}">
-      <video style="outline:none" width="640" height="480" controls preload="none">
-          <source src="{{entry.name}}" type="video/{{entry.extension}}">
-          <p>Your browser does not support this video format.</p>
-      <\video>
-  <\div>
+      <!--Set preload="none" and remove the #t=0.5 in the video src to remove
+      the preview / preload.-->
+      <video style="outline:none" width="640" height="480" controls preload="metadata">
+          <source src="{{entry.name}}#t=0.5" type="video/{{entry.extension}}">
+          Your browser does not support this video format.
+      </video>
+  </div>
   {% endif %}
   {% endfor %}
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
@@ -166,9 +168,11 @@
           var vid_window = document.getElementById(id);
           var background = document.getElementById("background");
           if (vid_window.style.display != "block") {
+              vid_window.style.zIndex = "3";
               vid_window.style.display = "block";
               background.style.display = "block";
           } else {
+              vid_window.stlye.zIndex = "2";
               vid_window.style.display = "none";
               background.style.display = "none";
           }
@@ -179,6 +183,7 @@
           for (var i = 0; i < vid_windows.length; ++i) {
               var popup = vid_windows[i];  
               popup.style.display  = "none";
+              popup.style.zIndex = "2";
           }
           background.style.display = "none";
       }
