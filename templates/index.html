@@ -149,8 +149,8 @@
   <div class="overlay-content" id="{{entry.name}}">
       <!--Set preload="none" and remove the #t=0.5 in the video src to remove
       the preview / preload.-->
-      <video style="outline:none" width="640" height="480" controls preload="metadata">
-          <source src="{{entry.name}}#t=0.5" type="video/{{entry.extension}}">
+      <video style="outline:none" width="640" height="480" controls preload="none">
+          <source src="{{entry.name}}" type="video/{{entry.extension}}">
           Your browser does not support this video format.
       </video>
   </div>
