@@ -90,6 +90,27 @@
 	    {% endblock %}
 	</div>
     </div>
+
+	<script>
+	if (document.addEventListener)
+	{
+		document.addEventListener('contextmenu', function(e)
+		{
+			var x = e.clientX;
+			var y = e.clientY;
+	    		alert("Right clicked at x: "+x+", y: "+y); //here you draw your own menu
+	    		e.preventDefault();
+	  	}, false);
+	} else {
+		document.attachEvent(oncontextmenu, function()
+		{
+	    		alert("Right clicked");
+	    		window.event.returnValue = false;
+		});
+	}
+	</script>
+
 </body>
 
 </html>
+
