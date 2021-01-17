@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from file_server import db
 from flask_login import login_user, login_required, current_user, logout_user
-from stats import reports
+from stats import reports, net_usage_pie, net_usage_bar
 import os
 
 
@@ -81,6 +81,8 @@ def profile():
 
 @auth.route('/about')
 def about():
+    net_usage_pie()
+    net_usage_bar()
     imgs = os.listdir(os.path.join('assets', 'abt-img'))
     imgs = list(map(lambda fname: os.path.join('abt-img', fname), imgs))
     print(imgs)

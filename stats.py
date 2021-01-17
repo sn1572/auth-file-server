@@ -1,8 +1,11 @@
 import subprocess as sub
-import os
+import os, configparser
 
 
 reports = []
+config = configparser.ConfigParser()
+config.read(os.path.join('uwsgi_configs', 'afs.ini'))
+config = config['afs']
 
 
 def agg(f):
@@ -15,9 +18,13 @@ def agg(f):
 @agg
 def get_root_usage():
     #Gets root fs usage
-    out = sub.check_output('df | awk \'/\/dev\/root/ {print $5}\'', shell=1)
+    fs_path = config['fs-path']
+    fs_path = fs_path.replace('/', '\/')
+    fs_nickname = config['fs-nickname']
+    out = sub.check_output('df | awk \'/'+\
+        fs_path+'/ {print $5}\'', shell=1)
     out = out.decode('utf-8').strip()
-    return("Root file system usage: {}".format(out))
+    return("{} file system usage: {}".format(fs_nickname, out))
 
 
 @agg
@@ -45,7 +52,6 @@ def plex_hatred():
         level_map[current_dspp]))
 
 
-@agg
 def net_usage_pie():
     adapter = 'eth0'
     img_file = './assets/abt-img/network-log-pie.png'
@@ -56,7 +62,6 @@ def net_usage_pie():
     return('')
 
 
-@agg
 def net_usage_bar():
     adapter = 'eth0'
     img_file = './assets/abt-img/network-log-bar.png'
