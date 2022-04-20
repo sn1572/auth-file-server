@@ -207,7 +207,9 @@ class PathView(MethodView):
         elif os.path.isfile(path):
             if 'Range' in request.headers:
                 start, end = get_range(request)
-                res = partial_response(path, start, end, max_length=2*(1<<20))
+                chunk_size = 5*(1<<20)
+                res = partial_response(path, start, end,
+                                       max_length=chunk_size)
             else:
                 res = send_file(path)
                 res.headers.add('Content-Disposition', 'attachment')
