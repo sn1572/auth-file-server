@@ -59,3 +59,23 @@ def test_fd_seek():
         fd.seek(4)
         five_to_fifteen = fd.read(10)
     assert(five_to_fifteen) == data[4:14]
+
+
+def test_partial_response_4():
+    '''
+    Can we reassemble the file using the same style headers as Firefox?
+    '''
+    start = 0
+    length = min(2000, _test_length - start)
+    data = []
+    while length > 0:
+        response = fs.partial_response(_test_path, start, None, length)
+        data.append(response.data)
+        start = start + length
+        length = min(2000, _test_length - start)
+    whole_file = data[0]
+    for part in data[1:]:
+        whole_file += part
+    with open(_test_path, 'rb') as f:
+        correct = f.read(_test_length)
+    assert whole_file == correct
