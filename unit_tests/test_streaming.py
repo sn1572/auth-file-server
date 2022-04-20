@@ -13,8 +13,20 @@ def excprint(string):
     raise Exception(string)
 
 
+def test_partial_response_0():
+    'Does it return the last few bytes correctly?'
+    response = fs.partial_response(_test_path, _test_length-100, None, 2000)
+    assert len(response.data) == 100
+    assert response.status == '206 PARTIAL CONTENT'
+    headers = response.headers
+    assert headers['Content-Length'] == '100'
+    crange = f"bytes {_test_length-100}-{_test_length-1}/{_test_length}"
+    assert headers['Content-Range'] == crange
+    assert headers['Accept-Ranges'] == 'bytes'
+
+
 def test_partial_response_1():
-    'Basic test of length. Does it really return 2000 bytes?'
+    'Does it return the first few bytes correctly?'
     response = fs.partial_response(_test_path, 0, None, 2000)
     assert len(response.data) == 2000
     assert response.status == '206 PARTIAL CONTENT'
