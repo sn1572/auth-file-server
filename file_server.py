@@ -82,9 +82,9 @@ def time_desc(timestamp):
 @app.template_filter('data_fmt')
 def data_fmt(filename):
     t = 'unknown'
-    for type, exts in datatypes.items():
-        if filename.split('.')[-1] in exts:
-            t = type
+    for file_type, extension in datatypes.items():
+        if filename.split('.')[-1] in extension:
+            t = file_type
             break
     return t
 
@@ -106,10 +106,10 @@ def time_humanize(timestamp):
 
 def get_type(mode):
     if stat.S_ISDIR(mode) or stat.S_ISLNK(mode):
-        type = 'dir'
+        mode_type = 'dir'
     else:
-        type = 'file'
-    return type
+        mode_type = 'file'
+    return mode_type
 
 
 def streaming_response(path, start, end=None):
@@ -151,7 +151,6 @@ def streaming_response(path, start, end=None):
         length = end-start+1
 
     chunk_size = 1 << 20 #one megabyte
-    #chunk_size = 1 << 17
 
     response = Response(
         stream_with_context(
@@ -233,6 +232,21 @@ def get_range(request):
         return 0, None
 
 
+def get_info(filepath):
+    stat_res = os.stat(filepath)
+    info = {}
+    info['name'] = filename
+    info['mtime'] = stat_res.st_mtime
+    ft = get_type(stat_res.st_mode)
+    info['type'] = ft
+    total[ft] += 1
+    sz = stat_res.st_size
+    info['size'] = sz
+    total['size'] += sz
+    info['extension'] = (os.path.splitext(filename)[1])[1:]
+    return info
+
+
 class PathView(MethodView):
     @login_required
     def get(self, p=''):
@@ -249,17 +263,7 @@ class PathView(MethodView):
                 if hide_dotfile == 'yes' and filename[0] == '.':
                     continue
                 filepath = os.path.join(path, filename)
-                stat_res = os.stat(filepath)
-                info = {}
-                info['name'] = filename
-                info['mtime'] = stat_res.st_mtime
-                ft = get_type(stat_res.st_mode)
-                info['type'] = ft
-                total[ft] += 1
-                sz = stat_res.st_size
-                info['size'] = sz
-                total['size'] += sz
-                info['extension'] = (os.path.splitext(filename)[1])[1:]
+                info = get_info(filepath)
                 contents.append(info)
             page = render_template('index.html', path=p, contents=contents,
                                    total=total, hide_dotfile=hide_dotfile)
