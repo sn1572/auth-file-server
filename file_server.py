@@ -32,9 +32,27 @@ from models import User
 from auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)
 
-ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg', '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX', 'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
-datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav', 'archive': '7z,zip,rar,gz,tar', 'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf', 'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt', 'source': 'atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml,plist', 'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4', 'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
-icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,gz,tar', 'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'fa-file-text': 'pdf', 'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt', 'fa-code': 'atom,plist,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml', 'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4', 'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg',
+           '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX',
+           'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
+datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav',
+             'archive': '7z,zip,rar,gz,tar',
+             'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf',
+             'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt',
+             'source': ('atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,'
+                        'less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,'
+                        'scss,sh,xml,yml,plist'),
+             'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4',
+             'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav',
+             'fa-archive': '7z,zip,rar,gz,tar',
+             'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp',
+             'fa-file-text': 'pdf', 'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt',
+             'fa-code': ('atom,plist,bat,bash,c,cmd,coffee,css,hml,js,json,'
+                         'java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,'
+                         'swift,scss,sh,xml,yml'),
+             'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4',
+             'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
 
 
 @login_manager.user_loader
@@ -97,17 +115,16 @@ def get_type(mode):
 def streaming_response(path, start, end=None):
     def make_response_chunk(path, start, chunk_size, length):
         print("start: {}, chunk_size: {}, length: {}".format(
-            start, chunk_size, length))
+              start, chunk_size, length))
         iters = length // chunk_size
         for i in range(iters):
             with open(path, 'rb') as fd:
                 fd.seek(start)
                 bytes_read = fd.read(chunk_size)
-            errmsg = "Chunk size: {}, bytes read: {}".format(
-                chunk_size,
-                len(bytes_read))
+            errmsg = f'ERROR: Read != request!: Chunk size: {chunk_size}, '
+            errmsg += f'bytes read: {len(bytes_read)}'
             assert len(bytes_read) == chunk_size, errmsg
-            print("Yielding {} bytes".format(chunk_size))
+            print(f'Yielding {chunk_size} bytes')
             yield bytes_read
             start += chunk_size
         remainder = length-chunk_size*iters
@@ -115,10 +132,9 @@ def streaming_response(path, start, end=None):
             with open(path, 'rb') as fd:
                 fd.seek(start)
                 bytes_read = fd.read(remainder)
-            errmsg = "Remainder bytes: {}, bytes read: {}".format(
-                remainder,
-                len(bytes_read))
-            #assert len(bytes_read) == remainder, errmsg
+            errmsg = f'ERROR: Read != requested: Remainder: {remainder}, '
+            errmsg += f'read: {bytes_read}'
+            assert len(bytes_read) == remainder, errmsg
             print("Yielding a remainder of {} bytes".format(
                 len(bytes_read)))
             yield bytes_read
@@ -176,26 +192,25 @@ def partial_response(path, start, end=None, max_length=None):
         length = max_length
 
     print("file size: {}, start: {}, length: {}".format(
-        file_size, start, length))
+          file_size, start, length))
 
     with open(path, 'rb') as fd:
         fd.seek(start)
-        bytes = fd.read(length)
-    assert len(bytes) == length
+        data = fd.read(length)
+    assert len(data) == length
 
+    print(f'Mimetype: {mimetypes.guess_type(path)[0]}')
     response = Response(
-        bytes,
+        data,
         206,
         mimetype=mimetypes.guess_type(path)[0],
         direct_passthrough=True,
     )
     response.headers.add(
-        'Content-Range', 'bytes {0}-{1}/{2}'.format(
-            start, start+length-1, file_size,
-        )
+        'Content-Range', f'bytes {start}-{start+length-1}/{file_size}'
     )
     response.headers.add(
-        'Content-Length', length
+        'Content-Length', f'{length}'
     )
     response.headers.add(
         'Accept-Ranges', 'bytes'
@@ -221,7 +236,9 @@ def get_range(request):
 class PathView(MethodView):
     @login_required
     def get(self, p=''):
-        hide_dotfile = request.args.get('hide-dotfile', request.cookies.get('hide-dotfile', 'no'))
+        hide_dotfile = request.args.get('hide-dotfile',
+                                        request.cookies.get('hide-dotfile',
+                                                            'no'))
         path = os.path.join(get_user_root(), p)
         if os.path.isdir(path):
             contents = []
@@ -244,7 +261,8 @@ class PathView(MethodView):
                 total['size'] += sz
                 info['extension'] = (os.path.splitext(filename)[1])[1:]
                 contents.append(info)
-            page = render_template('index.html', path=p, contents=contents, total=total, hide_dotfile=hide_dotfile)
+            page = render_template('index.html', path=p, contents=contents,
+                                   total=total, hide_dotfile=hide_dotfile)
             res = make_response(page, 200)
             res.set_cookie('hide-dotfile', hide_dotfile, max_age=16070400)
         elif os.path.isfile(path):

@@ -1,10 +1,12 @@
 import subprocess as sub
-import os, configparser
+import os
+import configparser
 
 
 reports = []
 config = configparser.ConfigParser()
-config.read(os.path.join('uwsgi_configs', 'afs.ini'))
+config.read(os.path.join(os.path.dirname(__file__), 'uwsgi_configs',
+                         'afs.ini'))
 config = config['afs']
 
 
