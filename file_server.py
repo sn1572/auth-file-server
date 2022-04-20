@@ -111,70 +111,6 @@ def get_type(mode):
     return mode_type
 
 
-def streaming_response(path, start, end=None):
-    def make_response_chunk(path, start, chunk_size, length):
-        print("start: {}, chunk_size: {}, length: {}".format(
-              start, chunk_size, length))
-        iters = length // chunk_size
-        for i in range(iters):
-            with open(path, 'rb') as fd:
-                fd.seek(start)
-                bytes_read = fd.read(chunk_size)
-            errmsg = f'ERROR: Read != request!: Chunk size: {chunk_size}, '
-            errmsg += f'bytes read: {len(bytes_read)}'
-            assert len(bytes_read) == chunk_size, errmsg
-            print(f'Yielding {chunk_size} bytes')
-            yield bytes_read
-            start += chunk_size
-        remainder = length-chunk_size*iters
-        if remainder > 0:
-            with open(path, 'rb') as fd:
-                fd.seek(start)
-                bytes_read = fd.read(remainder)
-            errmsg = f'ERROR: Read != requested: Remainder: {remainder}, '
-            errmsg += f'read: {bytes_read}'
-            assert len(bytes_read) == remainder, errmsg
-            print("Yielding a remainder of {} bytes".format(
-                len(bytes_read)))
-            yield bytes_read
-
-    file_size = os.path.getsize(path)
-    if (start > file_size-1) or (end < start):
-        #Request not satisfiable
-        response = Response(416)
-        return(response)
-
-    if end is None:
-        length = file_size-start
-    else:
-        length = end-start+1
-
-    chunk_size = 1 << 20 #one megabyte
-
-    response = Response(
-        stream_with_context(
-            make_response_chunk(path, start, chunk_size,
-                length
-            )
-        ),
-        206,
-        mimetype=mimetypes.guess_type(path)[0],
-        direct_passthrough=True,
-    )
-    response.headers.add(
-        'Content-Range', 'bytes {0}-{1}/{2}'.format(
-            start, start+length, file_size-1
-        ),
-    )
-    response.headers.add(
-        'Content-Length', length
-    )
-    response.headers.add(
-        'Accept-Ranges', 'bytes'
-    )
-    return(response)
-
-
 def partial_response(path, start, end=None, max_length=None):
     file_size = os.path.getsize(path)
     if end is None:
@@ -234,15 +170,13 @@ def get_range(request):
 def get_info(filepath):
     stat_res = os.stat(filepath)
     info = {}
-    info['name'] = filename
+    info['name'] = os.path.basename(filepath)
     info['mtime'] = stat_res.st_mtime
     ft = get_type(stat_res.st_mode)
     info['type'] = ft
-    total[ft] += 1
     sz = stat_res.st_size
     info['size'] = sz
-    total['size'] += sz
-    info['extension'] = (os.path.splitext(filename)[1])[1:]
+    info['extension'] = (os.path.splitext(filepath)[1])[1:]
     return info
 
 
@@ -263,6 +197,8 @@ class PathView(MethodView):
                     continue
                 filepath = os.path.join(path, filename)
                 info = get_info(filepath)
+                total[info['type']] += 1
+                total['size'] += info['size']
                 contents.append(info)
             page = render_template('index.html', path=p, contents=contents,
                                    total=total, hide_dotfile=hide_dotfile)
