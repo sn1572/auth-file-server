@@ -32,9 +32,27 @@ from models import User
 from auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)
 
-ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg', '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX', 'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
-datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav', 'archive': '7z,zip,rar,gz,tar', 'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf', 'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt', 'source': 'atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml,plist', 'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4', 'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
-icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav', 'fa-archive': '7z,zip,rar,gz,tar', 'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'fa-file-text': 'pdf', 'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt', 'fa-code': 'atom,plist,bat,bash,c,cmd,coffee,css,hml,js,json,java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,scss,sh,xml,yml', 'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4', 'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg',
+           '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX',
+           'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
+datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav',
+             'archive': '7z,zip,rar,gz,tar',
+             'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf',
+             'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt',
+             'source': ('atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,'
+                        'less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,'
+                        'scss,sh,xml,yml,plist'),
+             'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4',
+             'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav',
+             'fa-archive': '7z,zip,rar,gz,tar',
+             'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp',
+             'fa-file-text': 'pdf', 'fa-film': '3g2,3gp,3gp2,3gpp,mov,qt',
+             'fa-code': ('atom,plist,bat,bash,c,cmd,coffee,css,hml,js,json,'
+                         'java,less,markdown,md,php,pl,py,rb,rss,sass,scpt,'
+                         'swift,scss,sh,xml,yml'),
+             'fa-file-text-o': 'txt', 'fa-film': 'mp4,m4v,ogv,webm,MP4',
+             'fa-globe': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
 
 
 @login_manager.user_loader
@@ -178,12 +196,12 @@ def partial_response(path, start, end=None, max_length=None):
 
     with open(path, 'rb') as fd:
         fd.seek(start)
-        bytes = fd.read(length)
-    assert len(bytes) == length
+        data = fd.read(length)
+    assert len(data) == length
 
     print(f'Mimetype: {mimetypes.guess_type(path)[0]}')
     response = Response(
-        bytes,
+        data,
         206,
         mimetype=mimetypes.guess_type(path)[0],
         direct_passthrough=True,
