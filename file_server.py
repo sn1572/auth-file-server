@@ -34,15 +34,28 @@ app.register_blueprint(auth_blueprint)
 ignored = ['.bzr', '$RECYCLE.BIN', '.DAV', '.DS_Store', '.git', '.hg',
            '.htaccess', '.htpasswd', '.Spotlight-V100', '.svn', '__MACOSX',
            'ehthumbs.db', 'robots.txt', 'Thumbs.db', 'thumbs.tps']
-datatypes = {'audio': 'm4a,mp3,oga,ogg,webma,wav',
-             'archive': '7z,zip,rar,gz,tar',
-             'image': 'gif,ico,jpe,jpeg,jpg,png,svg,webp', 'pdf': 'pdf',
-             'quicktime': '3g2,3gp,3gp2,3gpp,mov,qt',
-             'source': ('atom,bat,bash,c,cmd,coffee,css,hml,js,json,java,'
-                        'less,markdown,md,php,pl,py,rb,rss,sass,scpt,swift,'
-                        'scss,sh,xml,yml,plist'),
-             'text': 'txt', 'video': 'mp4,m4v,ogv,webm,MP4',
-             'website': 'htm,html,mhtm,mhtml,xhtm,xhtml'}
+
+datatypes = {'m4a': 'audio', 'mp3': 'audio', 'oga': 'audio', 'ogg': 'audio',
+             'webma': 'audio', 'wav': 'audio', '7z': 'archive',
+             'zip': 'archive', 'rar': 'archive', 'gz': 'archive',
+             'tar': 'archive', 'gif': 'image', 'ico': 'image', 'jpe': 'image',
+             'jpeg': 'image', 'jpg': 'image', 'png': 'image', 'svg': 'image',
+             'webp': 'image', 'pdf': 'pdf', '3g2': 'quicktime',
+             '3gp': 'quicktime', '3gp2': 'quicktime', '3gpp': 'quicktime',
+             'mov': 'quicktime', 'qt': 'quicktime', 'atom': 'source',
+             'bat': 'source', 'bash': 'source', 'c': 'source',
+             'cmd': 'source', 'coffee': 'source', 'css': 'source',
+             'hml': 'source', 'js': 'source', 'json': 'source',
+             'java': 'source', 'less': 'source', 'markdown': 'source',
+             'md': 'source', 'php': 'source', 'pl': 'source', 'py': 'source',
+             'rb': 'source', 'rss': 'source', 'sass': 'source',
+             'scpt': 'source', 'swift': 'source', 'scss': 'source',
+             'sh': 'source', 'xml': 'source', 'yml': 'source',
+             'plist': 'source', 'txt': 'text', 'mp4': 'video', 'm4v': 'video',
+             'ogv': 'video', 'webm': 'video', 'htm': 'website',
+             'html': 'website', 'mhtm': 'website', 'mhtml': 'website',
+             'xhtm': 'website', 'xhtml': 'website'}
+
 icontypes = {'fa-music': 'm4a,mp3,oga,ogg,webma,wav',
              'fa-archive': '7z,zip,rar,gz,tar',
              'fa-picture-o': 'gif,ico,jpe,jpeg,jpg,png,svg,webp',
@@ -80,12 +93,12 @@ def time_desc(timestamp):
 
 @app.template_filter('data_fmt')
 def data_fmt(filename):
-    t = 'unknown'
-    for file_type, extension in datatypes.items():
-        if filename.split('.')[-1] in extension:
-            t = file_type
-            break
-    return t
+    _, extension = os.path.splitext(filename)
+    extension = extension[1:]
+    try:
+        return datatypes[extension]
+    except KeyError:
+        return 'unknown'
 
 
 @app.template_filter('icon_fmt')
@@ -133,19 +146,21 @@ def partial_response(path, start, end=None, max_length=None):
         data = fd.read(length)
     assert len(data) == length
 
-    print(f'Mimetype: {mimetypes.guess_type(path)[0]}')
+    mimetype = mimetypes.guess_type(path)[0]
     response = Response(
         data,
         206,
-        mimetype=mimetypes.guess_type(path)[0],
+        mimetype=mimetype,
         direct_passthrough=True,
     )
     response.headers.add(
         'Content-Range', f'bytes {start}-{start+length-1}/{file_size}'
     )
+    '''
     response.headers.add(
         'Content-Length', f'{length}'
     )
+    '''
     response.headers.add(
         'Accept-Ranges', 'bytes'
     )
@@ -167,6 +182,16 @@ def get_range(request):
         return 0, None
 
 
+def get_mime_type(filename):
+    _, extension = os.path.splitext(filename)
+    extension = extension[1:].lower()
+    try:
+        basetype = datatypes[extension]
+        return f"{basetype}/{extension}"
+    except KeyError:
+        return "unknown"
+
+
 def get_info(filepath):
     stat_res = os.stat(filepath)
     info = {}
@@ -180,7 +205,7 @@ def get_info(filepath):
     return info
 
 
-def get_directory(path, rel_path, hide_dotfile):
+def http_get_directory(path, rel_path, hide_dotfile):
     global ignored
     contents = []
     total = {'size': 0, 'dir': 0, 'file': 0}
@@ -209,13 +234,14 @@ class PathView(MethodView):
                                                             'no'))
         path = os.path.join(get_user_root(), p)
         if os.path.isdir(path):
-            res = get_directory(path, p, hide_dotfile)
+            res = http_get_directory(path, p, hide_dotfile)
         elif os.path.isfile(path):
             if 'Range' in request.headers:
                 start, end = get_range(request)
                 chunk_size = 5*(1<<20)
                 res = partial_response(path, start, end,
                                        max_length=chunk_size)
+                print(res.headers)
             else:
                 res = send_file(path)
                 res.headers.add('Content-Disposition', 'attachment')

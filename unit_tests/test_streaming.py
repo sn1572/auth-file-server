@@ -13,6 +13,17 @@ def excprint(string):
     raise Exception(string)
 
 
+def test_headers():
+    '''
+    Do the right headers show up?
+    '''
+    limit = min(2000, _test_length)
+    response = fs.partial_response(_test_path, 0, None, limit)
+    headers = response.headers
+    assert 'Content-Type' in headers
+    assert 'text/x-python; charset=utf-8' == headers['Content-Type']
+
+
 def test_partial_response_0():
     'Does it return the last few bytes correctly?'
     response = fs.partial_response(_test_path, _test_length-100, None, 2000)
