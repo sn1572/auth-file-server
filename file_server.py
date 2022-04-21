@@ -180,6 +180,27 @@ def get_info(filepath):
     return info
 
 
+def get_directory(path, rel_path, hide_dotfile):
+    global ignored
+    contents = []
+    total = {'size': 0, 'dir': 0, 'file': 0}
+    for filename in os.listdir(path):
+        if filename in ignored:
+            continue
+        if hide_dotfile == 'yes' and filename[0] == '.':
+            continue
+        filepath = os.path.join(path, filename)
+        info = get_info(filepath)
+        total[info['type']] += 1
+        total['size'] += info['size']
+        contents.append(info)
+    page = render_template('index.html', path=rel_path, contents=contents,
+                           total=total, hide_dotfile=hide_dotfile)
+    res = make_response(page, 200)
+    res.set_cookie('hide-dotfile', hide_dotfile, max_age=16070400)
+    return res
+
+
 class PathView(MethodView):
     @login_required
     def get(self, p=''):
@@ -188,22 +209,7 @@ class PathView(MethodView):
                                                             'no'))
         path = os.path.join(get_user_root(), p)
         if os.path.isdir(path):
-            contents = []
-            total = {'size': 0, 'dir': 0, 'file': 0}
-            for filename in os.listdir(path):
-                if filename in ignored:
-                    continue
-                if hide_dotfile == 'yes' and filename[0] == '.':
-                    continue
-                filepath = os.path.join(path, filename)
-                info = get_info(filepath)
-                total[info['type']] += 1
-                total['size'] += info['size']
-                contents.append(info)
-            page = render_template('index.html', path=p, contents=contents,
-                                   total=total, hide_dotfile=hide_dotfile)
-            res = make_response(page, 200)
-            res.set_cookie('hide-dotfile', hide_dotfile, max_age=16070400)
+            res = get_directory(path, p, hide_dotfile)
         elif os.path.isfile(path):
             if 'Range' in request.headers:
                 start, end = get_range(request)
