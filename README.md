@@ -33,6 +33,7 @@ Clone to your RPi (or similar environment). Then:
         ./db_manager.py --init
 
 3. Start the server
+    a. Make sure that `run.sh` references an `.ini` configuration file that suits your system. Examine the configuration file before use.
 
         ./run.sh
 
