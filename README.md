@@ -16,7 +16,7 @@ The two largest projects on which this project builds are:
 - Web page theme integration
 - Video playback with html5 video tag
 
-Leveraging the video tag is a big improvement. The built in Chrome player struggles with large video files.
+Note: Since the main motivation for this server is that does not transcode on-demand (as this overloads a Raspberry Pi 4) the server makes not attempt to deliver a video that your browser can actually *play*. I've found that the .webm container format with libvpx video code and libopus audio codec is compatible with Firefox and Chromium as deployed on Fedora Linux. This encoding should be supported by Chromium on any OS as per [the official Chromium docs](https://www.chromium.org/audio-video/). If you want your server to deliver properly encoded video and audio, it is up to you to schedule a Cron job or other means to transcode your library.
 
 ## Install notes
 
