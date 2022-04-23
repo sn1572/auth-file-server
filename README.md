@@ -2,7 +2,7 @@
 
 Simple file browser with video streaming.
 
-The major inspriation for this project was just how bad Plex is when run on a Raspberry Pi. Whereas a single thread from this server can deliver a 170 MB video in seconds on LAN, Plex would deadlock 4 cores indefinitely (with video transcoding). Bad Plex. This project is meant to be a lightweight replacement that functions entirely in browser with no special client code.
+The major inspriation for this project was just how bad Plex is when run on a Raspberry Pi. Whereas a single thread from this server can deliver a 170 MB video in seconds on LAN, Plex would deadlock the CPU indefinitely with video transcoding. The Pi is just not cut out for that sort of processing load. This project is meant to be a lightweight replacement that functions entirely in browser with no special client code.
 
 The two largest projects on which this project builds are:
 
