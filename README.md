@@ -30,17 +30,19 @@ Clone to your RPi (or similar environment). Then:
 
 2. Create the database and server root directory
 
-        ./db_manager.py --init
+        ./scripts/db_manager.py --init
 
 3. Start the server. Make sure that `run.sh` references an `.ini` configuration file that suits your system. Examine the configuration file before use.
 
-        ./run.sh
+        ./scripts/run.sh
 
 4. Visit the website and sign up
 5. Revisit the command line and approve new users
 
-        ./db_manager -e <user-email> -a
-        ./db_manager -u <user-name> -a
-        ./db_manager -i <user-id> -a
+        ./scripts/db_manager -e <user-email> -a
+        #or
+        ./scripts/db_manager -u <user-name> -a
+        #or
+        ./scripts/db_manager -i <user-id> -a
 
 And that's it. User directories can be found in server-root/<user-id>. You can select (or create your own) messages to display on the about page by altering stats.py.
