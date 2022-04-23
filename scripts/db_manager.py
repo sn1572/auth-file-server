@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 
+import sys
+sys.path.insert(0, '..')
 from file_server import db, app
 from models import User
 from werkzeug.security import generate_password_hash
-import argparse, os
+import argparse
+import os
 
 
 '''
