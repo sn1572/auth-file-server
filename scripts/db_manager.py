@@ -142,8 +142,8 @@ if __name__ == '__main__':
         type=str,
         default='server-root',
         help='''Root directory of file server (default ./server-root).
-            Argument required if approving a user or initializing with
-            a custom root directory.''')
+                Argument required if approving a user or initializing with
+                a custom root directory.''')
     parser.add_argument('-l', '--list',
         action = 'store_true',
         help="List all users in the database")
@@ -151,30 +151,22 @@ if __name__ == '__main__':
         action = 'store',
         type=str,
         help="Enter a new password for the user.")
+    parser.add_argument('-n', '--table_names',
+                        action = 'store_true',
+                        help="List the names of all tables in the database.")
 
     args = parser.parse_args()
-
-    init = args.init
-    approve = args.approve
-    uname = args.uname
-    email = args.email
-    approve = args.approve
-    disapprove = args.disapprove
-    info = args.info
-    rootdir = args.rootdir
-    listall = args.list
-    uid = args.id
-    password = args.password
 
     '''
     Functions that don't need a user or users
     to be specified.
     '''
-    if init:
+    if args.init:
         init_func()
-
-    if listall:
+    if args.listall:
         list_all_func()
+    if args.table_names:
+        print(db.metadata.tables.keys())
 
     '''
     This block gets the specified user.
@@ -186,12 +178,12 @@ if __name__ == '__main__':
     to f(list(user))
     '''
     user_descr = None
-    if email:
-        user_descr = {'email': email}
-    elif uname:
-        user_descr = {'name': uname}
-    elif uid:
-        user_descr = {'id': uid}
+    if args.email:
+        user_descr = {'email': args.email}
+    elif args.uname:
+        user_descr = {'name': args.uname}
+    elif args.uid:
+        user_descr = {'id': args.uid}
     if not user_descr:
         print("No user identifier specified. Use -e, -u, or -i flags.")
         exit()
@@ -200,13 +192,11 @@ if __name__ == '__main__':
     Implement logic for prioritizing cli flag
     execution here.
     '''
-    if approve: 
+    if args.approve: 
         users_lambda(approve_func, **user_descr)
-    elif disapprove:
+    elif args.disapprove:
         users_lambda(disapprove_func, **user_descr)
-
-    if info:
+    if args.info:
         users_lambda(info_func, **user_descr)
-
-    if password:
-        reset_password(password, **user_descr)
+    if args.password:
+        reset_password(args.password, **user_descr)
