@@ -1,6 +1,7 @@
 import subprocess as sub
 import os
 import configparser
+import random
 
 
 reports = []
@@ -37,18 +38,18 @@ def get_kernel_version():
 
 @agg
 def plex_hatred():
-    current_dspp = 7
+    current_dspp = random.randint(1,10)
     level_map = {0: 'un-disappointed',
         1: 'they forgot napkins in your happy meal',
         2: 'cloudy day',
-        3: 'missed a spot while cleaning',
-        4: '15 minute delay',
-        5: 'item out of stock; refund issued',
+        3: 'missed a spot while cleaning glass',
+        4: 'your bust is delayed 15 minutes',
+        5: 'item out of stock; refund issued - after 5 days',
         6: 'windows update during work presentation',
-        7: 'Lahey with a whiskey dick',
-        8: 'Linus Torvalds doesn\'t have time to see you',
-        9: 'Dennis Ritchie locked his office door',
-        10: 'like a kernel developer being told you run a tainted kernel'}
+        7: 'Mr. Lahey with a whiskey dick after getting back with Randy',
+        8: 'Linus Torvalds being told Nvidia don\'t contribute FOSS drivers',
+        9: 'Dennis Ritchie realizing your compiler is not ANSII compliant',
+        10: 'like a Kernel developer discovering your tainted kernel'}
     return("Current disappointment in Plex: {}/10 ({})".format(
         current_dspp,
         level_map[current_dspp]))
