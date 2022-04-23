@@ -47,7 +47,7 @@ def plex_hatred():
         5: 'item out of stock; refund issued - after 5 days',
         6: 'windows update during work presentation',
         7: 'Mr. Lahey with a whiskey dick after getting back with Randy',
-        8: 'Linus Torvalds being told Nvidia don\'t contribute FOSS drivers',
+        8: 'Linus Torvalds being told Nvidia won\'t contribute FOSS drivers',
         9: 'Dennis Ritchie realizing your compiler is not ANSII compliant',
         10: 'like a Kernel developer discovering your tainted kernel'}
     return("Current disappointment in Plex: {}/10 ({})".format(
