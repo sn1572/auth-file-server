@@ -43,7 +43,7 @@ def plex_hatred():
         1: 'they forgot napkins in your happy meal',
         2: 'cloudy day',
         3: 'missed a spot while cleaning glass',
-        4: 'your bust is delayed 15 minutes',
+        4: 'your bus is delayed 15 minutes',
         5: 'item out of stock; refund issued - after 5 days',
         6: 'windows update during work presentation',
         7: 'Mr. Lahey with a whiskey dick after getting back with Randy',
