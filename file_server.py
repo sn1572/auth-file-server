@@ -144,7 +144,6 @@ def partial_response(path, start, end=None, max_length=None):
     with open(path, 'rb') as fd:
         fd.seek(start)
         data = fd.read(length)
-    assert len(data) == length
 
     mimetype = mimetypes.guess_type(path)[0]
     response = Response(
@@ -156,11 +155,6 @@ def partial_response(path, start, end=None, max_length=None):
     response.headers.add(
         'Content-Range', f'bytes {start}-{start+length-1}/{file_size}'
     )
-    '''
-    response.headers.add(
-        'Content-Length', f'{length}'
-    )
-    '''
     response.headers.add(
         'Accept-Ranges', 'bytes'
     )

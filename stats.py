@@ -50,9 +50,9 @@ def plex_hatred():
         8: 'Linus Torvalds being told Nvidia don\'t contribute FOSS drivers',
         9: 'Dennis Ritchie realizing your compiler is not ANSII compliant',
         10: 'like a Kernel developer discovering your tainted kernel'}
-    return("Current disappointment in Plex: {}/10 ({})".format(
-        current_dspp,
-        level_map[current_dspp]))
+    msg = "Current disappointment in Plex: "
+    msg += f"{current_dspp}, {level_map[current_dspp]}"
+    return msg
 
 
 def net_usage_pie():
