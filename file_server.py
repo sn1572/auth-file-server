@@ -235,10 +235,8 @@ class PathView(MethodView):
                 chunk_size = 5*(1<<20)
                 res = partial_response(path, start, end,
                                        max_length=chunk_size)
-                print(res.headers)
             else:
                 res = send_file(path)
-                res.headers.add('Content-Disposition', 'attachment')
         else:
             res = make_response('Not found', 404)
         return res
