@@ -22,7 +22,7 @@ Note: Since the main motivation for this server is avoidance of on-demand transc
 
 Clone to your RPi (or similar environment). Then:
 
-1. Create a Python 3 environment and install requirements
+1. Create a Python 3 environment and install requirements (the code for performing this operation is also present within `run.sh`)
 
         python3 -m venv ./pyenv
         source pyenv/bin/activate
