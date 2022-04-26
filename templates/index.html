@@ -151,7 +151,7 @@
   <div class="overlay-content" id="{{entry.name}}">
       <!--Set preload="none" and remove the #t=0.5 in the video src to remove
       the preview / preload.-->
-      <video style="outline:none" width="640" height="480" controls preload="none">
+      <video style="outline:none" width="640" height="480" controls preload="none" id="video-{{entry.name}}">
           <source src="{{entry.name}}" type="video/{{entry.extension}}">
           Your browser does not support this video format.
       </video>
@@ -182,10 +182,13 @@
       function hide_overlay(){
           var background = document.getElementById("background");
           var vid_windows = document.querySelectorAll('.overlay-content');
+          var players = document.getElementsByTagName("video");
           for (var i = 0; i < vid_windows.length; ++i) {
               var popup = vid_windows[i];  
               popup.style.display  = "none";
               popup.style.zIndex = "2";
+              var player = players[i];
+              player.pause();
           }
           background.style.display = "none";
       }
